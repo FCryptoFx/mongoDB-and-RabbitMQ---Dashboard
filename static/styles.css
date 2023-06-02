@@ -9,10 +9,47 @@
     margin-bottom: 20px;
 }
 
+.info-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.info-item {
+  font-family: Arial;
+  display: inline-block;
+  background-color: #000;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-right: 20px;
+  margin-top: 30px;
+  border-radius: 10px;
+}
+
+
 /*Estilos para la pagina*/
 body {
-    background: linear-gradient(to bottom, #87CEEB, #AED6F1, #D4E6F1, #FFFFFF);
-    font-family: Impact, Charcoal, sans-serif;
+  background: #FFFFFF;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  background: #333;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
 }
 
 .app-title {

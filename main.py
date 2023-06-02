@@ -180,30 +180,38 @@ def get_overview_info():
 def update_queue_info(n):
     queue_info = get_queue_info()
     if queue_info:
-        return html.Table(
-            [html.Tr([html.Th('Nombre de la cola'), html.Th('Mensajes encolados')])] +
-            [html.Tr([html.Td(queue['name']), html.Td(queue['messages'])]) for queue in queue_info]
-        )
+        table_header = [html.Tr([html.Th('Nombre de la cola', style={'font-size': '35px'}), html.Th('Mensajes encolados', style={'font-size': '35px'})], style={'text-align': 'center'})]
+        table_rows = [html.Tr([html.Td(queue['name'], style={'font-size': '70px'}), html.Td(queue['messages'], style={'font-size': '70px'})], style={'text-align': 'center'}) for queue in queue_info]
+        table = html.Table(table_header + table_rows, style={'margin': 'auto'})
+        return table
     else:
-        return html.Div("No se pudo obtener información de las colas.")
+        return html.Div("No se pudo obtener información de las colas.", style={'text-align': 'center'})
 
 
-@app.callback(Output('overview-info-output', 'children'), [Input('interval-component', 'n_intervals')])
+"""@app.callback(Output('overview-info-output', 'children'), [Input('interval-component', 'n_intervals')])
 def update_overview_info(n):
     overview_info = get_overview_info()
     if overview_info:
         queue_totals = overview_info.get('queue_totals', {})
         children = []
         for key, value in queue_totals.items():
-            children.append(html.Div([html.Strong(f"{key}: "), str(value)]))
+            if isinstance(value, (int, float)):
+                formatted_value = "{:,}".format(value)  # Formatear el valor numérico con separadores de miles
+                div = html.Div([html.Strong(f"{key}: "), formatted_value], style={'text-align': 'center', 'margin-bottom': '10px'})
+            else:
+                div = html.Div([html.Strong(f"{key}: "), str(value)], style={'text-align': 'center', 'margin-bottom': '10px'})
+            children.append(div)
         return children
     else:
-        return html.Div("No se pudo obtener información general.")
+        return html.Div("No se pudo obtener información general.", style={'text-align': 'center'})"""
+
+
 
 
 ##################################################################################################################
 #############################################  APP LAYOUT  #######################################################
 ##################################################################################################################
+
 
 app.layout = html.Div(
     children=[
@@ -215,16 +223,18 @@ app.layout = html.Div(
                 dcc.Graph(id='grafica-documentos', figure=fig, className='graph')
             ]
         ),
-        html.Div(id='queue-info-output'),
-        html.Div(id='overview-info-output'),
-        dcc.Interval(id='interval-colecciones', interval=10000, n_intervals=0),
+        html.Div(
+            className='info-container',
+            children=[
+                html.Div(id='queue-info-output', className='info-item'),
+                #html.Div(id='overview-info-output', className='info-item')
+            ]
+        ),
+        dcc.Interval(id='interval-colecciones', interval=5000, n_intervals=0),
         dcc.Interval(id='interval-component', interval=5000, n_intervals=0),
         html.Link(rel='stylesheet', href='/static/styles.css')
     ]
 )
-
-
-
 
 
 if __name__ == '__main__':
