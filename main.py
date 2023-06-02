@@ -12,8 +12,14 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
-# Carga las variables de entorno desde el archivo .env
+import requests
+
+# Load environment variables from the .env file
 load_dotenv()
+
+##################################################################################################################
+#############################################  CONNECTIONS  ######################################################
+##################################################################################################################
 
 # MONGODB
 mongo_uri = os.environ.get('MONGODB_URI')
@@ -26,16 +32,25 @@ db = client[mongodb_dbname]
 # Go into one of database's collection (table)
 collections = db.list_collection_names()
 
+# RABBITMQ API
+api_url = os.environ.get('RABBITMQ_URL')
+auth_username = os.environ.get('RABBITMQ_AUTH_USERNAME')
+auth_password = os.environ.get('RABBITMQ_AUTH_PASSWORD')
+auth = (auth_username, auth_password)
+
 
 ##################################################################################################################
+#############################################  FUNCTIONS  ########################################################
 ##################################################################################################################
 
-# Crear la aplicación Dash
+# Create the Dash app
 app = dash.Dash(__name__)
 
+# Styles
 styles_css_path = Path(__file__).resolve().parent / 'static' / 'styles.css'
 
-############# COLLECTIONS ACTIVITY ################
+
+############# COLLECTIONS ACTIVITY GRAPH ################
 # Función para obtener los datos del gráfico de colecciones
 def get_Collections_Number():
     colecciones = db.list_collection_names()
@@ -82,7 +97,8 @@ def upddate_Collections_Data(n_intervals):
 
     return fig1
 
-############# TOTAL DOCUMENTS ##################
+
+############# TOTAL DOCUMENTS GRAPH ##################
 def get_Transactions_Data():
     # Obtiene los datos de todas las colecciones y realiza el cálculo
     # para obtener la cantidad de documentos por día
@@ -141,21 +157,53 @@ fig.update_layout(
 )
 
 
-#######################################################################################################################
-"""# Definir el diseño de la aplicación
-app.layout = html.Div(
-    children=[
-        html.H1('Número de Colecciones en la Base de Datos', style={'textAlign': 'center'}),
-        dcc.Graph(id='graph-colecciones'),
-        dcc.Interval(id='interval-colecciones', interval=10000, n_intervals=0),
+############# RABBITMQ DATA ##################
+def get_queue_info():
+    url = api_url + 'api/queues'
+    response = requests.get(url, auth=auth)
+    if response.status_code == 200:
+        queues = response.json()
+        return queues
+    else:
+        return []
 
-        html.Div([
-            html.H1('Gráfica de documentos por día', style={'textAlign': 'center'}),
-            dcc.Graph(id='grafica-documentos', figure=fig),
-        ])
-    ]
-)"""
+def get_overview_info():
+    url = api_url + 'api/overview'
+    response = requests.get(url, auth=auth)
+    if response.status_code == 200:
+        overview = response.json()
+        return overview
+    else:
+        return []
 
+@app.callback(Output('queue-info-output', 'children'), [Input('interval-component', 'n_intervals')])
+def update_queue_info(n):
+    queue_info = get_queue_info()
+    if queue_info:
+        return html.Table(
+            [html.Tr([html.Th('Nombre de la cola'), html.Th('Mensajes encolados')])] +
+            [html.Tr([html.Td(queue['name']), html.Td(queue['messages'])]) for queue in queue_info]
+        )
+    else:
+        return html.Div("No se pudo obtener información de las colas.")
+
+
+@app.callback(Output('overview-info-output', 'children'), [Input('interval-component', 'n_intervals')])
+def update_overview_info(n):
+    overview_info = get_overview_info()
+    if overview_info:
+        queue_totals = overview_info.get('queue_totals', {})
+        children = []
+        for key, value in queue_totals.items():
+            children.append(html.Div([html.Strong(f"{key}: "), str(value)]))
+        return children
+    else:
+        return html.Div("No se pudo obtener información general.")
+
+
+##################################################################################################################
+#############################################  APP LAYOUT  #######################################################
+##################################################################################################################
 
 app.layout = html.Div(
     children=[
@@ -167,10 +215,17 @@ app.layout = html.Div(
                 dcc.Graph(id='grafica-documentos', figure=fig, className='graph')
             ]
         ),
+        html.Div(id='queue-info-output'),
+        html.Div(id='overview-info-output'),
         dcc.Interval(id='interval-colecciones', interval=10000, n_intervals=0),
+        dcc.Interval(id='interval-component', interval=5000, n_intervals=0),
         html.Link(rel='stylesheet', href='/static/styles.css')
     ]
 )
+
+
+
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)

@@ -1,0 +1,27 @@
+/*Para que aparezcan uno al lado del otro*/
+.graphs-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.graph {
+    flex-basis: 48%;
+    margin-bottom: 20px;
+}
+
+/*Estilos para la pagina*/
+body {
+    background: linear-gradient(to bottom, #87CEEB, #AED6F1, #D4E6F1, #FFFFFF);
+    font-family: Impact, Charcoal, sans-serif;
+}
+
+.app-title {
+    text-align: center;
+    color: #000000;
+    font-size: 50px;
+    margin-bottom: 20px;
+}
+
+.grafica {
+    width: 48%;
+}
