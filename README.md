@@ -1,2 +1,4 @@
 # mongoDB-Dashboard
-We are going to build a Dash application that will collect the data from a MongoDB database and display it in the form of a dashboard.
+This is a Dash application that will collect the data from a MongoDB database and RabbitMQ queue system and display it in the form of a dashboard.
+
+![Dashboard](https://github.com/FCryptoFx/mongoDB-Dashboard/blob/main/img/Dashboard.PNG))
