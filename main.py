@@ -310,8 +310,8 @@ app.layout = html.Div(
                 ),
             ]
         ),
-        dcc.Interval(id='interval-colecciones', interval=5000, n_intervals=0),
-        dcc.Interval(id='interval-component', interval=5000, n_intervals=0),
+        dcc.Interval(id='interval-colecciones', interval=1000, n_intervals=0),
+        dcc.Interval(id='interval-component', interval=1000, n_intervals=0),
         html.Link(rel='stylesheet', href='/static/styles.css')
     ]
 )
