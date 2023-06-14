@@ -17,6 +17,7 @@ import requests
 from datetime import datetime
 from collections import deque
 
+
 # Load environment variables from the .env file
 load_dotenv()
 
@@ -29,7 +30,10 @@ mongo_uri = os.environ.get('MONGODB_URI')
 client = pymongo.MongoClient(mongo_uri)
 
 # Go into the database created
-mongodb_dbname = os.environ.get('MONGODB_DBNAME')
+mongodb_dbname = os.environ.get('MONGODB_DBNAME').strip()
+print(mongodb_dbname)
+print(type(mongodb_dbname))
+
 db = client[mongodb_dbname]
 
 # Go into one of database's collection (table)
@@ -187,8 +191,8 @@ def get_queue_info():
 def update_queue_info(n):
     queue_info = get_queue_info()
     if queue_info:
-        table_header = [html.Tr([html.Th('Queue name', style={'font-size': '35px'}), html.Th('Queued messages', style={'font-size': '35px'})], style={'text-align': 'center'})]
-        table_rows = [html.Tr([html.Td(queue['name'], style={'font-size': '70px'}), html.Td(queue['messages'], style={'font-size': '70px'})], style={'text-align': 'center'}) for queue in queue_info]
+        table_header = [html.Tr([html.Th('Queue name', style={'font-size': '25px'}), html.Th('Queued messages', style={'font-size': '25px'})], style={'text-align': 'center'})]
+        table_rows = [html.Tr([html.Td(queue['name'], style={'font-size': '40px'}), html.Td(queue['messages'], style={'font-size': '40px'})], style={'text-align': 'center'}) for queue in queue_info]
         table = html.Table(table_header + table_rows, style={'margin': 'auto'})
         return table
     else:
@@ -312,7 +316,7 @@ app.layout = html.Div(
         ),
         dcc.Interval(id='interval-colecciones', interval=1000, n_intervals=0),
         dcc.Interval(id='interval-component', interval=1000, n_intervals=0),
-        html.Link(rel='stylesheet', href='/static/styles.css')
+        html.Link(rel='stylesheet', href='../static/styles.css')
     ]
 )
 
