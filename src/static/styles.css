@@ -1,12 +1,12 @@
 /*Para que aparezcan uno al lado del otro*/
 .graphs-container {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 .graph {
-    flex-basis: 48%;
-    margin-bottom: 20px;
+  flex-basis: 48%;
+  margin-bottom: 20px;
 }
 
 .info-container {
@@ -21,7 +21,7 @@
   display: inline-block;
   background-color: #000;
   color: #fff;
-  padding: 10px 20px;
+  /* padding: 10px 20px; */
   font-size: 24px;
   font-weight: bold;
   text-align: center;
@@ -30,13 +30,14 @@
   border-radius: 10px;
 }
 
-
 /*Estilos para la pagina*/
 body {
-  background: #FFFFFF;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
+  background-color: #000000; /* Color de fondo que desees */
+  height: 100vh; /* Tamaño de la ventana */
+  margin: 0; /* Elimina los márgenes predeterminados del body */
 }
 
 .container {
@@ -52,13 +53,71 @@ body {
   text-align: center;
 }
 
+.header-container{
+  width: 100%;
+}
+
 .app-title {
-    text-align: center;
-    color: #000000;
-    font-size: 50px;
-    margin-bottom: 20px;
+  text-align: center;
+  color: #ffffff;
+  font-size: 70px;
+  margin: 0;
+  font-family: 'Bebas Neue', sans-serif;
+  width: auto;
+}
+
+.logo-img {
+  width: 15%;
 }
 
 .grafica {
-    width: 48%;
+  width: 48%;
 }
+
+/* +++++++++++++++++++++++++++++++++++++++++++++++++++ */
+.info-column {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-around;
+  height: 300px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100% !important;
+  margin: 0;
+}
+
+.queue-table{
+  height: 100%;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.queue-table th,
+.queue-table td {
+  border: 1px solid #838383;
+  border-collapse: collapse;
+}
+
+.queue-name-title, 
+.queued-messages-title  {
+  font-size: larger;
+  color: white;
+  padding: 5px;
+}
+
+.crisp {
+  stroke: #838383 !important;
+}
+
+.xtick {
+  stroke: #ffffff !important;
+}
+.ytick {
+  stroke: #ffffff !important;
+}
+

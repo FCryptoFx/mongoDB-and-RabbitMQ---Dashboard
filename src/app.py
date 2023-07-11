@@ -31,8 +31,6 @@ client = pymongo.MongoClient(mongo_uri)
 
 # Go into the database created
 mongodb_dbname = os.environ.get('MONGODB_DBNAME').strip()
-print(mongodb_dbname)
-print(type(mongodb_dbname))
 
 db = client[mongodb_dbname]
 
@@ -84,11 +82,11 @@ def update_Collections_Data(n_intervals):
             'title': {
                 'text': 'Collections Activity',
                 'x': 0.5,  # Alinear el título al centro del gráfico
-                'font': {'size': 24, 'color': 'black', 'family': 'Arial'}
+                'font': {'size': 24, 'color': 'white', 'family': 'Arial'}
             },
             'xaxis': {
                 'title': '',
-                'tickfont': {'size': 14},
+                'tickfont': {'size': 12, 'color': 'white'},
                 'linecolor': 'black',  # Color de la línea del eje x
                 'linewidth': 1,  # Grosor de la línea del eje x
                 'ticks': 'outside',  # Posición de las marcas de los ejes
@@ -97,17 +95,20 @@ def update_Collections_Data(n_intervals):
                 'ticklen': 8  # Longitud de las marcas de los ejes
             },
             'yaxis': {
-                'title': 'Transactions',
-                'tickfont': {'size': 10},
-                'linecolor': 'black',  # Color de la línea del eje y
+                'title': {
+                    'text': 'Transactions',
+                    'font': {'size': 14, 'color': 'white'}
+                },
+                'tickfont': {'size': 10, 'color': 'white'},
+                'linecolor': 'white',  # Color de la línea del eje y
                 'linewidth': 1,  # Grosor de la línea del eje y
                 'ticks': 'outside',  # Posición de las marcas de los ejes
-                'tickcolor': 'black',  # Color de las marcas de los ejes
+                'tickcolor': 'white',  # Color de las marcas de los ejes
                 'tickwidth': 1,  # Grosor de las marcas de los ejes
                 'ticklen': 8  # Longitud de las marcas de los ejes
             },
-            'plot_bgcolor': 'white',  # Cambiar el color de fondo del área de trazado a blanco
-            'paper_bgcolor': 'rgba(0, 0, 0, 0)',  # Hacer transparente el color de fondo del área del gráfico
+            'plot_bgcolor': 'black',  # Cambiar el color de fondo del área de trazado a blanco
+            'paper_bgcolor': 'rgba(0, 0, 0)',  # Hacer transparente el color de fondo del área del gráfico
             'margin': {'t': 80, 'b': 80, 'l': 80, 'r': 80}  # Ajustar los márgenes del gráfico
         }
     }
@@ -115,7 +116,7 @@ def update_Collections_Data(n_intervals):
     return fig1
 
 
-    return fig1
+    # return fig1
 
 
 ############# TOTAL DOCUMENTS GRAPH ##################
@@ -170,11 +171,12 @@ fig.update_traces(marker_line_color='rgb(7,20,14)', marker_line_width=1)  # Camb
 fig.update_layout(
     title={'text': 'Transactions per day', 'x': 0.5},
     yaxis_title='Transactions',
-    title_font=dict(family='Arial', size=24, color='black'),
-    xaxis=dict(title_font=dict(family='Arial', size=14, color='rgb(0, 0, 0)')),
-    yaxis=dict(title_font=dict(family='Arial', size=14, color='rgb(0, 0, 0)'))
+    title_font=dict(family='Arial', size=24, color='white'),
+    xaxis=dict(title_font=dict(family='Arial', size=14, color='rgb(255, 255, 255)')),
+    yaxis=dict(title_font=dict(family='Arial', size=14, color='rgb(255, 255, 255)'))
 )
-
+fig.update_layout(plot_bgcolor='black')
+fig.update_layout(paper_bgcolor='black');
 
 ############# RABBITMQ QUEUE DATA ##################
 def get_queue_info():
@@ -191,10 +193,23 @@ def get_queue_info():
 def update_queue_info(n):
     queue_info = get_queue_info()
     if queue_info:
-        table_header = [html.Tr([html.Th('Queue name', style={'font-size': '25px'}), html.Th('Queued messages', style={'font-size': '25px'})], style={'text-align': 'center'})]
-        table_rows = [html.Tr([html.Td(queue['name'], style={'font-size': '40px'}), html.Td(queue['messages'], style={'font-size': '40px'})], style={'text-align': 'center'}) for queue in queue_info]
-        table = html.Table(table_header + table_rows, style={'margin': 'auto'})
+        # table_header = [html.Tr([html.Th('Queue name', style={'font-size': '25px'}), html.Th('Queued messages', style={'font-size': '25px'})], style={'text-align': 'center'})]
+        # table_rows = [html.Tr([html.Td(queue['name'], style={'font-size': '40px'}), html.Td(queue['messages'], style={'font-size': '40px'})], style={'text-align': 'center'}) for queue in queue_info]
+        # table = html.Table(table_header + table_rows, style={'margin': 'auto'})
+        # return table
+        table_header = [html.Tr([
+            html.Th('Queue name', className='queue-name-title'),
+            html.Th('Queued messages', className='queued-messages-title')
+        ], style={'text-align': 'center'})]
+
+        table_rows = [html.Tr([
+            html.Td(queue['name'], className='queue-name'),
+            html.Td(queue['messages'], className='queued-messages')
+        ] , style={'text-align': 'center'}) for queue in queue_info]
+
+        table = html.Table(table_header + table_rows, className='queue-table', style={'margin': 'auto'})
         return table
+
     else:
         return html.Div("No se pudo obtener información de las colas.", style={'text-align': 'center'})
 
@@ -224,6 +239,7 @@ def get_overview_info():
     [Input('interval-component', 'n_intervals')]
 )
 def update_graph(n):
+    global fig2
     # Obtener los datos de estado de las colas
     overview_info = get_overview_info()
     if overview_info:
@@ -252,39 +268,34 @@ def update_graph(n):
         fig2.update_layout(
             title={
                 'text': 'Queue Status',
+                'font': {'size': 18, 'color': 'white'},  # Ajustar el tamaño de las etiquetas del eje y
+                # 'tickfont': {'size': 12, 'color': 'white'},
                 'x': 0.5,  # Centrar el título horizontalmente
                 'y': 0.95  # Posición vertical del título
             },
             yaxis={
-                'title': 'Queued Messages',
+                'title': {
+                    'text': 'Queued Messages',
+                    'font': {'size': 14, 'color': 'white'}
+                },
+                'tickfont': {'size': 12, 'color': 'white'},
                 'title_standoff': 20,  # Ajustar la separación entre el título y el eje y
-                'tickfont': {'size': 12},  # Ajustar el tamaño de las etiquetas del eje y
                 'range': y_axis_range # Establecer el rango del eje y
             },
-            template='plotly_dark',
+
+            xaxis={
+                'tickfont': {'size': 12, 'color': 'white'}
+            },
+            
+            # template='plotly_dark',
             margin={'t': 35, 'b': 10}
         )
 
+        fig2.update_layout(plot_bgcolor='black')
+        fig2.update_layout(paper_bgcolor='black');
+
+
         return fig2
-
-
-
-"""@app.callback(Output('overview-info-output', 'children'), [Input('interval-component', 'n_intervals')])
-def update_overview_info(n):
-    overview_info = get_overview_info()
-    if overview_info:
-        queue_totals = overview_info.get('queue_totals', {})
-        children = []
-        for key, value in queue_totals.items():
-            if isinstance(value, (int, float)):
-                formatted_value = "{:,}".format(value)  # Formatear el valor numérico con separadores de miles
-                div = html.Div([html.Strong(f"{key}: "), formatted_value], style={'text-align': 'center', 'margin-bottom': '10px'})
-            else:
-                div = html.Div([html.Strong(f"{key}: "), str(value)], style={'text-align': 'center', 'margin-bottom': '10px'})
-            children.append(div)
-        return children
-    else:
-        return html.Div("No se pudo obtener información general.", style={'text-align': 'center'})"""
 
 
 ##################################################################################################################
@@ -294,13 +305,38 @@ def update_overview_info(n):
 
 app.layout = html.Div(
     children=[
-        html.H1('BlockchainDB ACTIVITY', className='app-title'),
+         html.Link(
+            href="https://fonts.googleapis.com",
+            rel="preconnect"
+        ),
+        html.Link(
+            href="https://fonts.gstatic.com",
+            rel="preconnect"
+        ),
+         html.Link(
+            href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap",
+            rel="stylesheet"
+        ),
+        html.Link(
+            href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap",
+            rel="stylesheet"
+        ),
+        html.Div(
+            className="header-container",
+            children=[
+                html.H1('BlockchainDB ACTIVITY', className='app-title'),
+            ],
+            style={
+                'display': 'flex',
+                'justify-content': 'space-around'
+            }
+        ),
         html.Div(
             className='graphs-container',
             children=[
-                dcc.Graph(id='graph-colecciones', className='graph', style={'height': '500px'}),
-                dcc.Graph(id='grafica-documentos', figure=fig, className='graph', style={'height': '500px'})
-            ]
+                dcc.Graph(id='graph-colecciones', className='graph', style={'height': '500px',}),
+                dcc.Graph(id='grafica-documentos', figure=fig, className='graph', style={'height': '500px',})
+            ],
         ),
         html.Div(
             className='info-container',
@@ -308,18 +344,18 @@ app.layout = html.Div(
                 html.Div(
                     className='info-column',
                     children=[
-                        html.Div(id='queue-info-output', className='info-item', style={'height': '250px'}),
-                        dcc.Graph(id='graph-component', className='info-item', style={'height': '250px', 'width': '600px'})
+                        html.Div(id='queue-info-output', className='info-item', style={'height': '250px', 'width': '40%'}),
+                        dcc.Graph(id='graph-component', className='info-item', style={'height': '250px', 'width': '40%',})
                     ]
                 ),
             ]
         ),
-        dcc.Interval(id='interval-colecciones', interval=1000, n_intervals=0),
-        dcc.Interval(id='interval-component', interval=1000, n_intervals=0),
+        dcc.Interval(id='interval-colecciones', interval=5000, n_intervals=0),
+        dcc.Interval(id='interval-component', interval=5000, n_intervals=0),
         html.Link(rel='stylesheet', href='../static/styles.css')
     ]
 )
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run(debug=False)
